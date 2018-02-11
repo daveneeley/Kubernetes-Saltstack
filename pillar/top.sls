@@ -1,5 +1,4 @@
 base:
-  '*':
-  {% if "k8s-master" in grains.get('role', []) or "k8s-worker" in grains.get('role', []) %}
+  'role:k8s-(master|worker)':
+    - match: grain_pcre
     - cluster_config
-  {% endif %}
