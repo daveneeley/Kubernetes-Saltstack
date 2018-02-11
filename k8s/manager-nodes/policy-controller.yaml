@@ -27,8 +27,8 @@ spec:
         name: calico-policy
         env:
         - name: ETCD_ENDPOINTS
-          value: "http://MASTER_HOSTNAME:2379"
+          value: "http://{{ MASTER_HOSTNAME }}:2379"
         - name: K8S_API
-          value: "https://kubernetes.default.svc.CLUSTER_DOMAIN:443"
+          value: "https://kubernetes.default.svc.{{ CLUSTER_DOMAIN }}:443"
         - name: CONFIGURE_ETC_HOSTS
           value: "false"
