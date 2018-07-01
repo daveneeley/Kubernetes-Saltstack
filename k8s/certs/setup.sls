@@ -17,7 +17,7 @@ make-certs-temp-dir:
 download-source-certs:
   file.recurse:
     - name: /tmp/certs
-    - source: salt://k8s-certs
+    - source: salt://k8s/certs
 
 generate-ca-csr:
   cmd.run:
