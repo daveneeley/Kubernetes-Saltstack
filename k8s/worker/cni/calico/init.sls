@@ -29,23 +29,23 @@
 
 /etc/cni/net.d/10-calico.conf:
     file.managed:
-    - source: salt://k8s-worker/cni/calico/10-calico.conf
+    - source: salt://k8s/worker/cni/calico/10-calico.conf
     - user: root
     - template: jinja
     - group: root
     - mode: 644
     - require:
-      - sls: k8s-worker/cni
+      - sls: k8s.worker.cni
 
 /etc/cni/net.d/calico-kubeconfig:
     file.managed:
-    - source: salt://k8s-worker/cni/calico/calico-kubeconfig
+    - source: salt://k8s/worker/cni/calico/calico-kubeconfig
     - user: root
     - template: jinja
     - group: root
     - mode: 644
     - require:
-      - sls: k8s-worker/cni
+      - sls: k8s.worker.cni
 
 /opt/cni/bin/calico:
   file.managed:
@@ -54,7 +54,7 @@
     - group: root
     - mode: 755
     - require:
-      - sls: k8s-worker/cni
+      - sls: k8s.worker.cni
 
 /opt/cni/bin/calico-ipam:
   file.managed:
@@ -63,11 +63,11 @@
     - group: root
     - mode: 755
     - require:
-      - sls: k8s-worker/cni
+      - sls: k8s.worker.cni
 
 /etc/systemd/system/calico.service:
     file.managed:
-    - source: salt://k8s-worker/cni/calico/calico.service
+    - source: salt://k8s/worker/cni/calico/calico.service
     - user: root
     - template: jinja
     - group: root
