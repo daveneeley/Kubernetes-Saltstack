@@ -5,8 +5,8 @@
     "127.0.0.1",
     "kubernetes.default",
     "kubernetes.default.svc.cluster.local",
-{% for server, hostname in salt['mine.get']('role:k8s-.*', 'grains.get', 'grain_pcre') | dictsort() %}
-    "{{ hostname }}"{{ "," if not loop.last }}
+{% for server, fqdn in salt['mine.get']('role:k8s-.*', 'grains.get', 'grain_pcre') | dictsort() %}
+    "{{ fqdn }}"{% if not loop.last %},{% endif %}
 {% endfor %}
   ],
   "key": {
