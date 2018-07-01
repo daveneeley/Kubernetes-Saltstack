@@ -27,3 +27,12 @@ generate-ca-csr:
 generate-kubernetes-csr:
   cmd.run:
     - name: /usr/local/bin/cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes kubernetes-csr.json | /usr/local/bin/cfssljson -bare kubernetes
+    - cwd: /tmp/certs
+
+{% for file in ['ca.pem', 'ca-key.pem', 'kubernetes-key.pem', 'kubernetes.pem'] %}
+copy-generated-cert-{{ file }}:
+  file.managed:
+    - name: /srv/salt/k8s/certs/{{ file }}
+    - source: /tmp/certs/{{ file }}
+    - makedirs: True
+{% endfor %}
