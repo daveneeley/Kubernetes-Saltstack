@@ -5,8 +5,9 @@
     "127.0.0.1",
     "kubernetes.default",
     "kubernetes.default.svc.cluster.local",
-    "<Kubernetes MASTER hostname>",
-    "<Kubernetes Worker01 hostname>"
+{% for server, hostname in salt['mine.get']('roles:k8s-.*', 'k8s-node-list', 'tgt_type'='grain_pcre') | dictsort() %}
+    "{{ hostname }}"{{ "," if not loop.last }}
+{% endfor %}
   ],
   "key": {
     "algo": "ecdsa",

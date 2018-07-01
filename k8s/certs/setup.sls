@@ -19,6 +19,12 @@ download-source-certs:
     - name: /tmp/certs
     - source: salt://k8s/certs
 
+manage-hostnames-in-kubernetes-csr:
+  file.managed:
+    - name: /tmp/certs/kubernetes-csr.json
+    - source: salt://k8s/certs/kubernetes-csr.json
+    - template: jinja
+
 generate-ca-csr:
   cmd.run:
     - name: /usr/local/bin/cfssl gencert -initca ca-csr.json | /usr/local/bin/cfssljson -bare ca
