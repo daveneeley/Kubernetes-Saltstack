@@ -2,12 +2,14 @@ download-cfssl:
   file.managed:
     - name: /usr/local/bin/cfssl
     - source: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+    - source_hash: https://pkg.cfssl.org/R1.2/SHA256SUMS
     - mode: 755
 
 download-cfssljson:
   file.managed:
     - name: /usr/local/bin/cfssljson
     - source: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+    - source_hash: https://pkg.cfssl.org/R1.2/SHA256SUMS
     - mode: 755
 
 make-certs-temp-dir:
