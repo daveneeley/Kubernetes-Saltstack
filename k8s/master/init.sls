@@ -1,7 +1,7 @@
 {%- set k8sVersion = pillar['kubernetes']['version'] -%}
 
 include:
-  - k8s-master/etcd
+  - k8s.master.etcd
 
 /usr/bin/kube-apiserver:
   file.managed:
@@ -33,7 +33,7 @@ include:
 
 /etc/systemd/system/kube-apiserver.service:
     file.managed:
-    - source: salt://k8s-master/kube-apiserver.service
+    - source: salt://k8s/master/kube-apiserver.service
     - user: root
     - template: jinja
     - group: root
@@ -41,7 +41,7 @@ include:
 
 /etc/systemd/system/kube-controller-manager.service:
   file.managed:
-    - source: salt://k8s-master/kube-controller-manager.service
+    - source: salt://k8s/master/kube-controller-manager.service
     - user: root
     - template: jinja
     - group: root
@@ -49,7 +49,7 @@ include:
 
 /etc/systemd/system/kube-scheduler.service:
   file.managed:
-    - source: salt://k8s-master/kube-scheduler.service
+    - source: salt://k8s/master/kube-scheduler.service
     - user: root
     - template: jinja
     - group: root

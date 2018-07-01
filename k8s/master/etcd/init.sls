@@ -31,7 +31,7 @@ etcd-latest-archive:
 
 /etc/systemd/system/etcd.service:
   file.managed:
-    - source: salt://k8s-master/etcd/etcd.service
+    - source: salt://k8s/master/etcd/etcd.service
     - user: root
     - template: jinja
     - group: root
