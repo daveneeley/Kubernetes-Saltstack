@@ -4,6 +4,5 @@ k8s.master.set_master_grain:
     - value: k8s-master
 
 mine_functions:
-  k8s-node-list:
-    - mine_function: grains.get
+  grains.get:
     - fqdn
