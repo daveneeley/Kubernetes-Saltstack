@@ -1,3 +1,4 @@
+{% from 'k8s/map.jinja' import k8s with context %}
 {%- set k8sVersion = pillar['kubernetes']['version'] -%}
 {%- set os = salt['grains.get']('os') -%}
 {%- set enableIPv6 = pillar['kubernetes']['worker']['networking']['calico']['ipv6']['enable'] -%}
@@ -26,14 +27,14 @@ vm.max_map_count:
 
 /usr/bin/kubelet:
   file.managed:
-    - source: https://storage.googleapis.com/kubernetes-release/release/{{ k8sVersion }}/bin/linux/amd64/kubelet
+    - source: https://storage.googleapis.com/kubernetes-release/release/{{ k8sVersion }}/bin/linux/{{ k8s.cpu_arch_map }}/kubelet
     - skip_verify: true
     - group: root
     - mode: 755
 
 /usr/bin/kube-proxy:
   file.managed:
-    - source: https://storage.googleapis.com/kubernetes-release/release/{{ k8sVersion }}/bin/linux/amd64/kube-proxy
+    - source: https://storage.googleapis.com/kubernetes-release/release/{{ k8sVersion }}/bin/linux/{{ k8s.cpu_arch_map }}/kube-proxy
     - skip_verify: true
     - group: root
     - mode: 755

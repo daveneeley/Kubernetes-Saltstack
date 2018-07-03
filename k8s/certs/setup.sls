@@ -1,14 +1,15 @@
+{% from 'k8s/map.jinja' import k8s with context %}
 download-cfssl:
   file.managed:
     - name: /usr/local/bin/cfssl
-    - source: https://pkg.cfssl.org/R1.2/cfssl_linux-amd64
+    - source: https://pkg.cfssl.org/R1.2/cfssl_linux-{{ k8s.cpu_arch_map }}
     - source_hash: https://pkg.cfssl.org/R1.2/SHA256SUMS
     - mode: 755
 
 download-cfssljson:
   file.managed:
     - name: /usr/local/bin/cfssljson
-    - source: https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
+    - source: https://pkg.cfssl.org/R1.2/cfssljson_linux-{{ k8s.cpu_arch_map }}
     - source_hash: https://pkg.cfssl.org/R1.2/SHA256SUMS
     - mode: 755
 

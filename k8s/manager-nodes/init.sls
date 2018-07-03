@@ -1,3 +1,4 @@
+{% from 'ks8/map.jinja' import k8s with context %}
 setup-srv-k8s:
   file.directory:
     - name: /srv/k8s
@@ -11,6 +12,7 @@ download-k8s-manager-node-configs:
     - defaults:
         CLUSTER_DOMAIN: {{ pillar['kubernetes']('domain') }}
         MASTER_HOSTNAME: {{ pillar['kubernetes']('master:hostname') }}
+        CPU_ARCH_MAP: {{ k8s.cpu_arch_map }}
 
 create-k8s-rbac-calico:
   cmd.run:
@@ -55,12 +57,12 @@ create-k8s-heapster:
 download-k8s-helm:
   archive.extracted:
     - name: /srv/k8s
-    - source: https://kubernetes-helm.storage.googleapis.com/helm-{{ pillar['kubernetes']('global:helm-version') }}-linux-amd64.tar.gz
+    - source: https://kubernetes-helm.storage.googleapis.com/helm-{{ pillar['kubernetes']('global:helm-version') }}-linux-{{ k8s.cpu_arch_map }}.tar.gz
 
 manage-k8s-helm:
   file.managed:
     - name: /usr/local/bin/helm
-    - source: /srv/k8s/linux-amd64/helm
+    - source: /srv/k8s/linux-{{ k8s.cpu_arch_map }}/helm
     - file_mode: 755
 
 create-k8s-service-account-tiller:

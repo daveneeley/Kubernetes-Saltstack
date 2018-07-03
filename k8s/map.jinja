@@ -1,0 +1,29 @@
+{% import_yaml 'k8s/defaults.yaml' as default_settings %}
+
+{##
+Add any overrides based on CPU architecture.
+##}
+{% set cpu_arch_map = salt['grains.filter_by']({
+        'armv6l': {
+            "arch": 'arm'
+        },
+        'armv7l': {
+            "arch": 'arm'
+        },
+        'x86_64': {
+            "arch": 'amd64'
+        }
+  }
+  , grain="cpuarch"
+  , merge=salt['pillar.get']('k8s:lookup'))
+%}
+
+{% do default_settings.k8s.update(cpu_arch_map) %}
+
+{## Merge in k8s:lookup pillar ##}
+{% set k8s = salt['pillar.get']('k8s', default=default_settings.k8s, merge=True) %}
+
+{% do k8s.update({
+  'archive_name': 'go%s.linux-%s.tar.gz'|format(k8s.version, k8s.arch),
+  'base_dir': '%s/k8s/%s'|format(k8s.prefix, k8s.version)
+}) %}

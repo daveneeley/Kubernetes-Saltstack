@@ -1,3 +1,4 @@
+{%- from 'k8s/map.jinja' import k8s with context -%}
 {%- set cniVersion = pillar['kubernetes']['worker']['networking']['cni-version'] -%}
 {%- set cniProvider = pillar['kubernetes']['worker']['networking']['provider'] -%}
 
@@ -16,7 +17,7 @@
 cni-latest-archive:
   archive.extracted:
     - name: /opt/cni/bin
-    - source: https://github.com/containernetworking/plugins/releases/download/{{ cniVersion }}/cni-plugins-amd64-{{ cniVersion }}.tgz
+    - source: https://github.com/containernetworking/plugins/releases/download/{{ cniVersion }}/cni-plugins-{{ k8s.cpu_arch_map }}-{{ cniVersion }}.tgz
     - skip_verify: true
     - archive_format: tar
     - if_missing: /opt/cni/bin/loopback

@@ -1,3 +1,4 @@
+{% from 'k8s/map.jinja' import k8s with context %}
 {%- set etcdVersion = pillar['kubernetes']['master']['etcd']['version'] -%}
 /etc/etcd:
   file.directory:
@@ -18,16 +19,16 @@
 etcd-latest-archive:
   archive.extracted:
     - name: /opt/
-    - source: https://github.com/coreos/etcd/releases/download/{{ etcdVersion }}/etcd-{{ etcdVersion }}-linux-amd64.tar.gz
+    - source: https://github.com/coreos/etcd/releases/download/{{ etcdVersion }}/etcd-{{ etcdVersion }}-linux-{{ k8s.cpu_arch_map }}.tar.gz
     - skip_verify: true
     - archive_format: tar
 
 /usr/bin/etcd:
   file.symlink:
-    - target: /opt/etcd-{{ etcdVersion }}-linux-amd64/etcd
+    - target: /opt/etcd-{{ etcdVersion }}-linux-{{ k8s.cpu_arch_map }}/etcd
 /usr/bin/etcdctl:
   file.symlink:
-    - target: /opt/etcd-{{ etcdVersion }}-linux-amd64/etcdctl
+    - target: /opt/etcd-{{ etcdVersion }}-linux-{{ k8s.cpu_arch_map }}/etcdctl
 
 /etc/systemd/system/etcd.service:
   file.managed:
