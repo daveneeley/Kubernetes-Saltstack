@@ -10,7 +10,7 @@
 docker-latest-archive:
   archive.extracted:
     - name: /opt/
-    - source: https://download.docker.com/linux/static/stable/x86_64/docker-{{ dockerVersion }}.tgz
+    - source: https://download.docker.com/linux/static/stable/{{ grains['osarch'] }}/docker-{{ dockerVersion }}.tgz
     - skip_verify: true
     - archive_format: tar
     - if_missing: /opt/docker/
