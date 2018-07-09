@@ -3,6 +3,7 @@
 
 include:
   - k8s.master.etcd
+  - k8s.master.firewall
 
 /usr/bin/kube-apiserver:
   file.managed:
