@@ -7,6 +7,11 @@
     - group:  root
     - mode:  '755'
 
+cri_run_docker_installer:
+  cmd.run:
+    - name: https://get.docker.com
+
+{#
 docker-latest-archive:
   archive.extracted:
     - name: /opt/
@@ -42,12 +47,7 @@ docker-latest-archive:
 /usr/bin/docker-runc:
   file.symlink:
     - target: /opt/docker/docker-runc
-
-/etc/modules-load.d/overlay.conf:
-  file.managed:
-    - contents:    |
-        overlay
-        
+#}
 
 /etc/systemd/system/docker.service:
     file.managed:

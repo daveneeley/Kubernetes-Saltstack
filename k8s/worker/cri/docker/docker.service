@@ -13,7 +13,6 @@ ExecStart=/usr/bin/dockerd \
   --host=unix:///var/run/docker.sock \
   --log-level=error \
   --data-root=/dockerFS \
-  --storage-driver=overlay2
 Restart=on-failure
 RestartSec=5
 
