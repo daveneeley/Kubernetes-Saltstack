@@ -43,6 +43,12 @@ docker-latest-archive:
   file.symlink:
     - target: /opt/docker/docker-runc
 
+/etc/modules-load.d/overlay.conf:
+  file.managed:
+    - contents:    |
+        overlay
+        
+
 /etc/systemd/system/docker.service:
     file.managed:
     - source: salt://k8s/worker/cri/docker/docker.service
