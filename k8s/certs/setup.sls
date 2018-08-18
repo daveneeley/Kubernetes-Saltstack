@@ -21,6 +21,7 @@ download-source-certs:
   file.recurse:
     - name: /tmp/certs
     - source: salt://k8s/certs
+    - include_pat: ca*.json
 
 manage-hostnames-in-kubernetes-csr:
   file.managed:
