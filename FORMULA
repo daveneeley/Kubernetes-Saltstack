@@ -1,7 +1,7 @@
 name: k8s
 os: RedHat, Debian, Ubuntu, Fedora
 os_family: RedHat, Debian, Fedora
-version: 201802
+version: 201809
 release: 1
 summary: Installs Kubernetes master and workers
 description: A formula for installing Kubernetes master and workers
