@@ -12,7 +12,7 @@ ExecStart=/usr/bin/dockerd \
   --ip-masq=false \
   --host=unix:///var/run/docker.sock \
   --log-level=error \
-  --data-root=/dockerFS \
+  --data-root=/dockerFS
 Restart=on-failure
 RestartSec=5
 
