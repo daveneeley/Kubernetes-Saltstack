@@ -7,11 +7,12 @@
     - group:  root
     - mode:  '711'
 
+{#
 cri_run_docker_installer:
   cmd.run:
     - name: https://get.docker.com
+#}
 
-{#
 docker-latest-archive:
   archive.extracted:
     - name: /opt/
@@ -47,7 +48,6 @@ docker-latest-archive:
 /usr/bin/docker-runc:
   file.symlink:
     - target: /opt/docker/docker-runc
-#}
 
 /etc/systemd/system/docker.service:
     file.managed:
