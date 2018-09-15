@@ -21,18 +21,25 @@ create-k8s-rbac-calico:
 
 create-k8s-policy-controller:
   cmd.run:
-    - name: kubectl create -f policy-controller.yaml && sleep 10
+    - name: kubectl create -f /opt/calico.yaml && sleep 10
     - cwd: /srv/k8s
 
+{#
 create-k8s-kube-dns:
   cmd.run:
     - name: kubectl create -f kube-dns.yaml
     - cwd: /srv/k8s
+#}
 
-download-k8s-dashboard:
-  file.managed:
-    - name: /srv/k8s/kubernetes-dashboard.yaml
-    - source: https://raw.githubusercontent.com/kubernetes/dashboard/master/src/deploy/recommended/kubernetes-dashboard.yaml
+create-k8s-coredns:
+  cmd.run:
+    - name: kubectl create -f coredns.yaml
+    - cwd: /srv/k8s
+
+create-k8s-kubernetes-dashboard:
+  cmd.run:
+    - name: kubectl create -f kubernetes-dashboard.yaml
+    - cwd: /srv/k8s
 
 create-k8s-heapster-rbac:
   cmd.run:
