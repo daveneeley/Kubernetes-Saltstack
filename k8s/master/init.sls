@@ -93,16 +93,13 @@ kube-apiserver:
     - enable: True
     - watch:
       - /etc/systemd/system/kube-apiserver.service
-      - /var/lib/kubernetes/kubernetes.pem
 kube-controller-manager:
   service.running:
     - enable: True
     - watch:
       - /etc/systemd/system/kube-controller-manager.service
-      - /var/lib/kubernetes/kubernetes.pem
 kube-scheduler:
   service.running:
    - enable: True
    - watch:
      - /etc/systemd/system/kube-scheduler.service
-     - /var/lib/kubernetes/kubernetes.pem
