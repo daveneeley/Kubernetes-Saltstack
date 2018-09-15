@@ -41,6 +41,10 @@ docker-latest-archive:
   file.symlink:
     - target: /opt/docker/docker
 
+/usr/bin/docker-init:
+  file.symlink:
+    - target: /opt/docker/docker-init
+
 /usr/bin/docker-proxy:
   file.symlink:
     - target: /opt/docker/docker-proxy
