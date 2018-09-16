@@ -49,7 +49,7 @@ data:
     .:53 {
         errors
         health
-        kubernetes CLUSTER_DOMAIN CLUSTER_DOMAIN {
+        kubernetes {{ CLUSTER_DOMAIN }} {{ CLUSTER_DOMAIN }} {
           pods insecure
           upstream
           fallthrough in-addr.arpa ip6.arpa
