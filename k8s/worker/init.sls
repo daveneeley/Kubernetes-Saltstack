@@ -96,7 +96,6 @@ kubelet:
     - enable: True
     - watch:
       - /etc/systemd/system/kubelet.service
-      - /var/lib/kubernetes/kubernetes.pem
 
 kube-proxy:
   service.running:
