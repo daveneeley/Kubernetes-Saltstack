@@ -4,7 +4,7 @@
 
 /usr/bin/calicoctl:
   file.managed:
-    - source: https://github.com/projectcalico/calicoctl/releases/download/{{ calicoctlVersion }}/calicoctl-{{ k8s.kernel_cpu_arch_bits }}
+    - source: https://github.com/projectcalico/calicoctl/releases/download/{{ calicoctlVersion }}/calicoctl-{{ k8s.kernel_cpu_arch_map }}
     - skip_verify: true
     - group: root
     - mode: 755
@@ -23,7 +23,7 @@
 
 /opt/cni/bin/calico:
   file.managed:
-    - source: https://github.com/projectcalico/cni-plugin/releases/download/{{ calicoCniVersion }}/calico-{{ k8s.cpu_arch_bits }}
+    - source: https://github.com/projectcalico/cni-plugin/releases/download/{{ calicoCniVersion }}/calico-{{ k8s.cpu_arch_map }}
     - skip_verify: true
     - group: root
     - mode: 755
@@ -32,7 +32,7 @@
 
 /opt/cni/bin/calico-ipam:
   file.managed:
-    - source: https://github.com/projectcalico/cni-plugin/releases/download/{{ calicoCniVersion }}/calico-ipam-{{ k8s.cpu_arch_bits }}
+    - source: https://github.com/projectcalico/cni-plugin/releases/download/{{ calicoCniVersion }}/calico-ipam-{{ k8s.cpu_arch_map }}
     - skip_verify: true
     - group: root
     - mode: 755
