@@ -1,12 +1,18 @@
 {% set k8s = salt['grains.filter_by']({
         'armv6l': {
-            "cpu_arch_map": 'arm'
+            "cpu_arch_map": 'arm',
+            "cpu_arch_bits": 'arm64',
+            "kernel_cpu_arch_bits": grains['kernel']|lower . "-arm64"
         },
         'armv7l': {
-            "cpu_arch_map": 'arm'
+            "cpu_arch_map": 'arm',
+            "cpu_arch_bits": 'arm64',
+            "kernel_cpu_arch_bits": grains['kernel']|lower . "-arm64"
         },
         'x86_64': {
-            "cpu_arch_map": 'amd64'
+            "cpu_arch_map": 'amd64',
+            "cpu_arch_bits": 'amd64',
+            "kernel_cpu_arch_bits": grains['kernel']|lower . "-amd64"
         }
   }
   , grain="cpuarch"
