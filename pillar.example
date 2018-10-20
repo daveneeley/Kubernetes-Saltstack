@@ -1,3 +1,7 @@
+mine_functions:
+  grains.get:
+    - fqdn
+
 kubernetes:
   version: v1.11.2
   domain: cluster.local

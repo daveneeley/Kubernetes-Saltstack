@@ -15,8 +15,46 @@ Kubernetes-Saltstack provide an easy way to deploy H/A **Kubernetes Cluster** us
 - Integrated **add-ons**
 - **Composable** (CNI, CRI)
 - **RBAC** & **TLS** by default
+- Support Multi-Architecture
+- Supports SaltStack Formulas pattern
 
-## Getting started 
+## Getting started - cloning and targeting
+
+- Install the formula according to your favorite formula distribution pattern, including Salt Package Manager.
+- Symlink or copy pillar.example to /srv/pillar/k8s.sls.
+- Replace all tokens and keys in /srv/pillar/k8s.sls with new ones using a utility such as `pwgen 64`. Make other updates as desired.
+- Update /srv/pillar/top.sls to target all masters and workers with new k8s pillar.
+- Copy targets from top.sls to /srv/salt/top.sls. Update as follows:
+  - replace `my-salt-master` with the hostname of your salt master, 
+  - replace `my-k8s-masters` with a glob matching your k8s master nodes, and 
+  - replace `my-k8s-workers` with a glob matching your k8s worker nodes.
+
+## Getting started - adding masters and workers
+
+- Run state.highstate on the k8s masters and workers.
+- Run mine.update on the k8s masters and workers.
+- Run state.highstate (or state.sls k8s.certs.setup) on the salt master
+- Run state.highstate on the k8s masters and workers a second time.
+
+```bash
+# add grains
+salt my-k8s\* state.highstate
+
+# tell each new node to update the mine
+salt -G role:k8s-\* mine.update
+
+# generate certs on the salt master based on the mine data
+# each hostname in the cluster must be in the cert
+salt my-salt-master state.sls k8s.certs.setup
+
+# install kubernetes on master and workers
+salt -G role:k8s-\* state.highstate
+
+```
+
+Repeat these steps in order when adding or removing capacity.
+
+## Getting started  (original)
 
 Let's clone the git repo on Salt-master and create CA & certificates on the `k8s-certs/` directory using **`CfSSL`** tools:
 
