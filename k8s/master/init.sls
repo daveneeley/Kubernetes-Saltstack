@@ -80,7 +80,7 @@ include:
 
 /opt/calico.yaml:
     file.managed:
-    - source: salt://k8s/worker/cni/calico/calico.tmpl.yaml
+    - source: salt://k8s/master/cni/calico/calico.tmpl.yaml
     - user: root
     - template: jinja
     - group: root
