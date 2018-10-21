@@ -18,10 +18,11 @@ Kubernetes-Saltstack provide an easy way to deploy H/A **Kubernetes Cluster** us
 - Support Multi-Architecture
 - Supports SaltStack Formulas pattern
 
-## Getting started - cloning and targeting
+## Getting Started 
+# Cloning and Targeting
 
 - Install the formula according to your favorite formula distribution pattern, including Salt Package Manager.
-- Symlink or copy pillar.example to /srv/pillar/k8s.sls.
+- Symlink or copy pillar.example to /srv/pillar/k8s.sls. (See Pillar section below)
 - Replace all tokens and keys in /srv/pillar/k8s.sls with new ones using a utility such as `pwgen 64`. Make other updates as desired.
 - Update /srv/pillar/top.sls to target all masters and workers with new k8s pillar.
 - Copy targets from top.sls to /srv/salt/top.sls. Update as follows:
@@ -29,7 +30,7 @@ Kubernetes-Saltstack provide an easy way to deploy H/A **Kubernetes Cluster** us
   - replace `my-k8s-masters` with a glob matching your k8s master nodes, and 
   - replace `my-k8s-workers` with a glob matching your k8s worker nodes.
 
-## Getting started - adding masters and workers
+# Adding Masters and Workers
 
 - Run state.highstate on the k8s masters and workers.
 - Run mine.update on the k8s masters and workers.
@@ -52,45 +53,18 @@ salt -G role:k8s-\* state.highstate
 
 ```
 
-Repeat these steps in order when adding or removing capacity.
+Repeat the above steps in order when adding or removing capacity.
 
-## Getting started  (original)
+## k8s.certs.setup
 
-Let's clone the git repo on Salt-master and create CA & certificates on the `k8s-certs/` directory using **`CfSSL`** tools:
-
-```bash
-git clone https://github.com/valentin2105/Kubernetes-Saltstack.git /srv/salt
-ln -s /srv/salt/pillar /srv/pillar
-
-wget -q --show-progress --https-only --timestamping \
-   https://pkg.cfssl.org/R1.2/cfssl_linux-amd64 \
-   https://pkg.cfssl.org/R1.2/cfssljson_linux-amd64
-
-chmod +x cfssl_linux-amd64 cfssljson_linux-amd64
-sudo mv cfssl_linux-amd64 /usr/local/bin/cfssl
-sudo mv cfssljson_linux-amd64 /usr/local/bin/cfssljson
-```
+Creates a CA and certificates in the `/srv/salt/k8s/certs` directory on the salt master using **`CfSSL`** tools. Only certs from this directory are synced to kubernetes workers and masters. Modify the `certs/*json` files in the formula to match your cluster-name / country (optional), then run `k8s.certs.setup` again on the salt master.
 
 ### IMPORTANT Point
 
-Because we need to generate our own CA and certificates for the cluster, You MUST put **every hostnames of the Kubernetes cluster** (master & workers) in the `certs/kubernetes-csr.json` (`hosts` field). You can also modify the `certs/*json` files to match your cluster-name / country. (optional)  
+As we generate our own CA and certificates for the cluster, **every hostname in the Kubernetes cluster** (masters & workers) MUST be included in the `certs/kubernetes-csr.json` (`hosts` field). This file is managed for you automatically by setting the `k8s-master` and `k8s-worker` grains and syncing the `fqdn` of those minions to the salt mine. The `fqdn` grain is used in the `hosts` field. You can use either public or private names, but they must be registered somewhere (DNS provider, internal DNS server, `/etc/hosts` file).
 
-You can use either public or private names, but they must be registered somewhere (DNS provider, internal DNS server, `/etc/hosts` file).
-
-```bash
-cd /srv/salt/k8s-certs
-cfssl gencert -initca ca-csr.json | cfssljson -bare ca
-
-# Don't forget to edit kubernetes-csr.json before this point !
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kubernetes-csr.json | cfssljson -bare kubernetes
-```
-After that, edit the `pillar/cluster_config.sls` to configure your future Kubernetes cluster :
+## Pillar Configuration
+Edit the `pillar` to configure your future Kubernetes cluster :
 
 ```yaml
 kubernetes:
@@ -124,9 +98,9 @@ kubernetes:
       cni-version: v0.7.1
       provider: calico
       calico:
-        version: v3.2.1
-        cni-version: v3.2.1
-        calicoctl-version: v3.2.1
+        version: v3.2.3
+        cni-version: v3.2.3
+        calicoctl-version: v3.2.3
         controller-version: 3.2-release
         as-number: 64512
         token: hu0daeHais3aCHANGEMEhu0daeHais3a
@@ -213,10 +187,10 @@ k8s-salt-worker03   Ready     <none>     5m       v1.11.2    <none>        Ubunt
 k8s-salt-worker04   Ready     <none>     5m       v1.11.2    <none>        Ubuntu 18.04.1 LTS 
 ```
 
-To enable add-ons on the Kubernetes cluster, you can launch the `post_install/setup.sh` script :
+To enable add-ons on the Kubernetes cluster, you can launch the `k8s.manager-nodes` state :
 
 ```bash
-/srv/salt/post_install/setup.sh
+~# salt my-salt-master state.sls k8s.manager-nodes
 
 ~# kubectl get pod --all-namespaces
 NAMESPACE     NAME                                    READY     STATUS    RESTARTS   AGE
@@ -234,34 +208,8 @@ kube-system   monitoring-grafana-5bccc9f786-f4lf2     1/1       Running   0     
 kube-system   monitoring-influxdb-85cb4985d4-rd776    1/1       Running   0          1m
 ```
 
-## Good to know
-
-If you want add a node on your Kubernetes cluster, just add the new **Hostname** on `kubernetes-csr.json` and run theses commands :
-
-```bash
-cd /srv/salt/k8s-certs
-
-cfssl gencert \
-  -ca=ca.pem \
-  -ca-key=ca-key.pem \
-  -config=ca-config.json \
-  -profile=kubernetes \
-  kubernetes-csr.json | cfssljson -bare kubernetes
-
-salt -G 'role:k8s-master' state.highstate
-salt -G 'role:k8s-worker' state.highstate
-```
-
-Last `highstate` reload your Kubernetes master and configure automatically new workers.
-
 - Tested on Debian, Ubuntu and Fedora.
 - You can easily upgrade software version on your cluster by changing values in `pillar/cluster_config.sls` and apply a `state.highstate`.
 - This configuration use ECDSA certificates (you can switch to `rsa` if needed in `certs/*.json`).
 - You can tweak Pod's IPv4 pool, enable IPv6, change IPv6 pool, enable IPv6 NAT (for no-public networks), change BGP AS number, Enable IPinIP (to allow routes sharing of different cloud providers).
 - If you use `salt-ssh` or `salt-cloud` you can quickly scale new workers.
-
-
-## Support on Beerpay
-Hey dude! Help me out for a couple of :beers:!
-
-[![Beerpay](https://beerpay.io/valentin2105/Kubernetes-Saltstack/badge.svg?style=beer-square)](https://beerpay.io/valentin2105/Kubernetes-Saltstack)  [![Beerpay](https://beerpay.io/valentin2105/Kubernetes-Saltstack/make-wish.svg?style=flat-square)](https://beerpay.io/valentin2105/Kubernetes-Saltstack?focus=wish)
