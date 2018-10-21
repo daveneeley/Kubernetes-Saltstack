@@ -26,10 +26,12 @@ create-k8s-rbac-calico:
     - name: kubectl create -f rbac-calico.yaml
     - cwd: /srv/k8s/manager-nodes
 
-create-k8s-policy-controller:
+{% for yaml_file in salt['file.find']('/opt/calico/calico-*.yaml') %}
+create-k8s-policy-controller-{{ yaml_file }}:
   cmd.run:
-    - name: kubectl create -f /opt/calico.yaml && sleep 10
+    - name: kubectl create -f {{ yaml_file }} && sleep 10
     - cwd: /srv/k8s/manager-nodes
+{% endfor %}
 
 {% for orderedFile in ('coredns', 'kubernetes-dashboard', 'heapster-rbac', 'influxdb', 'grafana', 'heapster') %}
 create-k8s-{{ orderedFile }}:

@@ -4,7 +4,7 @@
     "10.32.0.1",
     "kubernetes.default",
     "kubernetes.default.svc.cluster.local",
-{% for server, fqdn in salt['mine.get']('role:k8s-.*', 'grains.get', 'grain_pcre') | dictsort() %}
+{% for server, fqdn in salt['mine.get']('role:k8s-.*', 'fqdn_list', 'grain_pcre') | dictsort() %}
     "{{ fqdn }}",
 {% endfor %}
     "127.0.0.1"

@@ -25,6 +25,7 @@
 	{%- set ipv6preInterface = "interface=*" -%}
 	{%- set ipv6preInterface = " " -%}
 {% endif %}
+{% set cpu_arch_map = cpu_arch_map|default('amd64') %}
 # Calico Version master
 # https://docs.projectcalico.org/master/releases#master
 # This manifest includes the following component versions:
@@ -34,14 +35,14 @@
 kind: DaemonSet
 apiVersion: extensions/v1beta1
 metadata:
-  name: calico-node
+  name: calico-node-{{ cpu_arch_map }}
   namespace: kube-system
   labels:
-    k8s-app: calico-node
+    k8s-app: calico-node-{{ cpu_arch_map }}
 spec:
   selector:
     matchLabels:
-      k8s-app: calico-node
+      k8s-app: calico-node-{{ cpu_arch_map }}
   updateStrategy:
     type: RollingUpdate
     rollingUpdate:
@@ -49,13 +50,15 @@ spec:
   template:
     metadata:
       labels:
-        k8s-app: calico-node
+        k8s-app: calico-node-{{ cpu_arch_map }}
       annotations:
         scheduler.alpha.kubernetes.io/critical-pod: ''
         scheduler.alpha.kubernetes.io/tolerations: |
           [{"key": "dedicated", "value": "master", "effect": "NoSchedule" },
            {"key":"CriticalAddonsOnly", "operator":"Exists"}]
     spec:
+      nodeSelector:
+        beta.kubernetes.io/arch: {{ cpu_arch_map }}
       hostNetwork: true
       serviceAccountName: calico-node
       # Minimize downtime during a rolling upgrade or deletion; tell Kubernetes to do a "force
@@ -65,8 +68,8 @@ spec:
         # Runs calico/node container on each Kubernetes node.  This
         # container programs network policy and routes on each
         # host.
-        - name: calico-node
-          image: quay.io/calico/node:{{ calicoNodeVersion }}
+        - name: calico-node-{{ cpu_arch_map }}
+          image: quay.io/calico/node:{{ calicoNodeVersion }}-{{ cpu_arch_map }}
           env:
             # The location of the Calico etcd cluster.
             - name: ETCD_ENDPOINTS
@@ -179,10 +182,10 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Deployment
 metadata:
-  name: calico-kube-controllers
+  name: calico-kube-controllers-{{ cpu_arch_map }}
   namespace: kube-system
   labels:
-    k8s-app: calico-kube-controllers
+    k8s-app: calico-kube-controllers-{{ cpu_arch_map }}
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ''
     scheduler.alpha.kubernetes.io/tolerations: |
@@ -195,18 +198,20 @@ spec:
     type: Recreate
   template:
     metadata:
-      name: calico-kube-controllers
+      name: calico-kube-controllers-{{ cpu_arch_map }}
       namespace: kube-system
       labels:
-        k8s-app: calico-kube-controllers
+        k8s-app: calico-kube-controllers-{{ cpu_arch_map }}
     spec:
       # The controllers must run in the host network namespace so that
       # it isn't governed by policy that would prevent it from working.
+      nodeSelector:
+        beta.kubernetes.io/arch: {{ cpu_arch_map }}
       hostNetwork: true
       serviceAccountName: calico-kube-controllers
       containers:
-        - name: calico-kube-controllers
-          image: quay.io/calico/kube-controllers:release-v3.1
+        - name: calico-kube-controllers-{{ cpu_arch_map }}
+          image: quay.io/calico/kube-controllers:{{ calicoNodeVersion }}-{{ cpu_arch_map }}
           env:
             - name: ETCD_ENDPOINTS
               value: "https://{{ etcdEndpoint }}:2379"

@@ -67,6 +67,14 @@ As we generate our own CA and certificates for the cluster, **every hostname in 
 Edit `/srv/pillar/k8s.sls` to configure your future Kubernetes cluster :
 
 ```yaml
+mine_functions:
+  fqdn_list:
+    - mine_function: grains.get
+    - fqdn
+  cpuarch_list:
+    - mine_function: grains.get
+    - cpuarch
+
 kubernetes:
   version: v1.11.2
   domain: cluster.local

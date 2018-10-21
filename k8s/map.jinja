@@ -1,19 +1,9 @@
+{% import_yaml 'k8s/defaults.yaml' as k8s_defaults %}
+
 {% set k8s = salt['grains.filter_by']({
-        'aarch64': {
-            "cpu_arch_map": 'arm64',
-            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-arm64"
-        },
-        'armv6l': {
-            "cpu_arch_map": 'arm',
-            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-arm"
-        },
-        'armv7l': {
-            "cpu_arch_map": 'arm',
-            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-arm"
-        },
-        'x86_64': {
-            "cpu_arch_map": 'amd64',
-            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-amd64"
+        'default': {
+            "cpu_arch_map": k8s_defaults.k8s.cpuarches[grains['cpuarch']] or 'amd64',
+            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-" ~ (k8s_defaults.k8s.cpuarches[grains['cpuarch']] or 'amd64')
         }
   }
   , grain="cpuarch"

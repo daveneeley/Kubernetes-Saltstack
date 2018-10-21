@@ -1,4 +1,5 @@
 {% from 'k8s/map.jinja' import k8s with context %}
+{% import_yaml 'k8s/defaults.yaml' as k8s_defaults %}
 {%- set k8sVersion = pillar['kubernetes']['version'] -%}
 {%- set masterCount = pillar['kubernetes']['master']['count'] -%}
 
@@ -76,15 +77,23 @@ include:
     - mode: 644
 
 {%- set cniProvider = pillar['kubernetes']['worker']['networking']['provider'] -%}
+{%- set cpu_mapped_names = [] -%}
+{%- for server, cpuarch in salt['mine.get']('role:k8s-.*', 'cpuarch_list', 'grain_pcre') | dictsort() -%}
+  {%- do cpu_mapped_names.append(k8s_defaults.k8s.cpuarches[cpuarch]) -%}
+{%- endfor -%}
 {% if cniProvider == "calico" %}
-
-/opt/calico.yaml:
+{% for mapped_arch in cpu_mapped_names|unique %}
+/opt/calico/calico-{{ mapped_arch }}.yaml:
     file.managed:
     - source: salt://k8s/master/cni/calico/calico.tmpl.yaml
     - user: root
     - template: jinja
     - group: root
     - mode: 644
+    - makedirs: true
+    - context:
+        cpu_arch_map: {{ mapped_arch }}
+{% endfor %}
 {% endif %}
 
 
