@@ -64,7 +64,7 @@ Creates a CA and certificates in the `/srv/salt/k8s/certs` directory on the salt
 As we generate our own CA and certificates for the cluster, **every hostname in the Kubernetes cluster** (masters & workers) MUST be included in the `certs/kubernetes-csr.json` (`hosts` field). This file is managed for you automatically by setting the `k8s-master` and `k8s-worker` grains and syncing the `fqdn` of those minions to the salt mine. The `fqdn` grain is used in the `hosts` field. You can use either public or private names, but they must be registered somewhere (DNS provider, internal DNS server, `/etc/hosts` file).
 
 # Pillar Configuration
-Edit the `pillar` to configure your future Kubernetes cluster :
+Edit `/srv/pillar/k8s.sls` to configure your future Kubernetes cluster :
 
 ```yaml
 kubernetes:
@@ -188,7 +188,7 @@ kube-system   monitoring-influxdb-85cb4985d4-rd776    1/1       Running   0     
 ```
 
 - Tested on Debian, Ubuntu and Fedora.
-- You can easily upgrade software version on your cluster by changing values in `pillar/cluster_config.sls` and apply a `state.highstate`.
+- You can easily upgrade software version on your cluster by changing values in `/srv/pillar/k8s.sls` and apply a `state.highstate`.
 - This configuration use ECDSA certificates (you can switch to `rsa` if needed in `certs/*.json`).
 - You can tweak Pod's IPv4 pool, enable IPv6, change IPv6 pool, enable IPv6 NAT (for no-public networks), change BGP AS number, Enable IPinIP (to allow routes sharing of different cloud providers).
 - If you use `salt-ssh` or `salt-cloud` you can quickly scale new workers.
