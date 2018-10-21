@@ -18,8 +18,8 @@ Kubernetes-Saltstack provide an easy way to deploy H/A **Kubernetes Cluster** us
 - Support Multi-Architecture
 - Supports SaltStack Formulas pattern
 
-## Getting Started 
-# Cloning and Targeting
+# Quickstart
+## Cloning and Targeting
 
 - Install the formula according to your favorite formula distribution pattern, including Salt Package Manager.
 - Symlink or copy pillar.example to /srv/pillar/k8s.sls. (See Pillar section below)
@@ -30,7 +30,7 @@ Kubernetes-Saltstack provide an easy way to deploy H/A **Kubernetes Cluster** us
   - replace `my-k8s-masters` with a glob matching your k8s master nodes, and 
   - replace `my-k8s-workers` with a glob matching your k8s worker nodes.
 
-# Adding Masters and Workers
+## Adding Masters and Workers
 
 - Run state.highstate on the k8s masters and workers.
 - Run mine.update on the k8s masters and workers.
@@ -63,7 +63,7 @@ Creates a CA and certificates in the `/srv/salt/k8s/certs` directory on the salt
 
 As we generate our own CA and certificates for the cluster, **every hostname in the Kubernetes cluster** (masters & workers) MUST be included in the `certs/kubernetes-csr.json` (`hosts` field). This file is managed for you automatically by setting the `k8s-master` and `k8s-worker` grains and syncing the `fqdn` of those minions to the salt mine. The `fqdn` grain is used in the `hosts` field. You can use either public or private names, but they must be registered somewhere (DNS provider, internal DNS server, `/etc/hosts` file).
 
-## Pillar Configuration
+# Pillar Configuration
 Edit the `pillar` to configure your future Kubernetes cluster :
 
 ```yaml
@@ -124,45 +124,24 @@ kubernetes:
 
 If you want to enable IPv6 on pod's side, you need to change `kubernetes.worker.networking.calico.ipv6.enable` to `true`.
 
-## Deployment
+# Deployment
 
 To deploy your Kubernetes cluster using this formula, you first need to setup your Saltstack master/Minion.  
 You can use [Salt-Bootstrap](https://docs.saltstack.com/en/stage/topics/tutorials/salt_bootstrap.html) or [Salt-Cloud](https://docs.saltstack.com/en/latest/topics/cloud/) to enhance the process. 
 
-The configuration is done to use the Salt-master as the Kubernetes master. You can have them as different nodes if needed but the `post_install/script.sh` require `kubectl` and access to the `pillar` files.
+By default the Salt-master is the Kubernetes master. You can have them as different nodes if needed but the `k8s.manager-nodes` state requires `kubectl` and access to the `pillar` files.
 
-#### The recommended configuration is :
+#### The recommended configuration is:
 
-- one or three Kubernetes-master (Salt-master & minion)
+The Minion's roles are matched with `Salt Grains` (kind of inventory), so you need to define the `role: k8s-master` and `role: k8s-worker` grains on your servers.
 
-- one or more Kubernetes-workers (Salt-minion)
+- one or three Kubernetes-master (Salt-master & minion) get `role: k8s-master`
 
-The Minion's roles are matched with `Salt Grains` (kind of inventory), so you need to define theses grains on your servers :
+- one or more Kubernetes-workers (Salt-minion) get `role: k8s-worker`
 
 If you want a small cluster, a master can be a worker too. 
 
-```bash
-# Kubernetes masters
-cat << EOF > /etc/salt/grains
-role: k8s-master
-EOF
-
-# Kubernetes workers
-cat << EOF > /etc/salt/grains
-role: k8s-worker
-EOF
-
-# Kubernetes master & workers
-cat << EOF > /etc/salt/grains
-role: 
-  - k8s-master
-  - k8s-worker
-EOF
-
-service salt-minion restart 
-```
-
-After that, you can apply your configuration (`highstate`) :
+With the grains set, the salt mine synced, and the certs updated, you can apply your configuration (`highstate`) :
 
 ```bash
 # Apply Kubernetes master configurations
