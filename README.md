@@ -51,6 +51,9 @@ salt my-salt-master state.sls k8s.certs.setup
 # install kubernetes on master and workers
 salt -G role:k8s-\* state.highstate
 
+#TODO: etcd doesn't restart as part of the highstate on the k8s-master nodes when certificates change. It should.
+#TODO: kubelet doesn't restart on the worker nodes when the certificates change. It should.
+
 ```
 
 Repeat the above steps in order when adding or removing capacity.
