@@ -3,9 +3,10 @@
 {% set k8s = salt['grains.filter_by']({
         'default': {
             "cpu_arch_map": k8s_defaults.k8s.cpuarches[grains['cpuarch']] or 'amd64',
-            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-" ~ (k8s_defaults.k8s.cpuarches[grains['cpuarch']] or 'amd64')
+            "kernel_cpu_arch_map": grains['kernel']|lower ~ "-" ~ (k8s_defaults.k8s.cpuarches[grains['cpuarch']] or 'amd64'),
+            "allowSwap": False
         }
   }
   , grain="cpuarch"
-  , merge=salt['pillar.get']('k8s:lookup'))
+  , merge=salt['pillar.get']('kubernetes'))
 %}

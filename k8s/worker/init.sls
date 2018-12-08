@@ -18,23 +18,8 @@ nfs-common:
   pkg.latest
 {% endif %} 
 
-{% if os == "Raspbian" %}
-k8s_raspbian_remove_swap:
-  cmd.run:
-    - name: dphys-swapfile swapoff && dphys-swapfile uninstall && update-rc.d dphys-swapfile remove
-    - onlyif: swapon --summary
-
-{% set cmdline = salt['cmd.run']('cat /boot/cmdline.txt') %}
-{% for cmd in ("cgroup_enable=cpuset","cgroup_memory=1","cgroup_enable=memory") %}
-{% if not cmd in cmdline %}
-k8s_raspbian_append_{{ cmd }}_to_boot_cmdline:
-  cmd.run:
-    - name: sed -i 's/$/ {{ cmd }}/' /boot/cmdline.txt
-{% endif %}
-{% endfor %}
-{# TODO: a reboot is required if anything in this block is executed #}
-{% elif os == 'Debian' and grains['osarch'] == 'armhf' %}
-k8s_debian_arm_remove_swap:
+{% if k8s.allowSwap == False %} 
+k8s_remove_swap:
   cmd.run:
     - name: swapoff -a
     - onlyif: swapon --summary

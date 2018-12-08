@@ -26,9 +26,9 @@ ExecStart=/usr/bin/kubelet \
   --tls-private-key-file=/var/lib/kubernetes/kubernetes-key.pem \
   --eviction-pressure-transition-period 30s \
   --cert-dir=/var/lib/kubelet \
-{%- if 'arm' in k8s.cpu_arch_map %}
+{%- if k8s.allowSwap == True %}
   --fail-swap-on=false \
-{% endif -%}
+{%- endif %}
   --v=2
 
 Restart=on-failure
